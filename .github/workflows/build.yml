@@ -19,17 +19,16 @@ jobs:
 
       - name: Install Android SDK & Build APK
         run: |
-          # Crear directorios del SDK
-          export ANDROID_SDK_ROOT=$HOME/android-sdk
-          mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
+          # Usar exclusivamente ANDROID_HOME predefinido por el sistema
+          mkdir -p $ANDROID_HOME/cmdline-tools
           
           # Descargar Command Line Tools oficiales
           wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdtools.zip
-          unzip -q cmdtools.zip -d $ANDROID_SDK_ROOT/cmdline-tools
-          mv $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools $ANDROID_SDK_ROOT/cmdline-tools/latest
+          unzip -q cmdtools.zip -d $ANDROID_HOME/cmdline-tools
+          mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
           
-          # Configurar variables de entorno
-          export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools
+          # Configurar el PATH utilizando solo ANDROID_HOME
+          export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
           
           # Aceptar licencias de Android automáticamente
           yes | sdkmanager --licenses > /dev/null
