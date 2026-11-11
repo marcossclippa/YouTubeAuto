@@ -16,16 +16,32 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
 
-      - name: Generate Gradle Wrapper & Build APK
+      - name: Install Android SDK & Build APK
         run: |
+          # Crear directorios del SDK
+          export ANDROID_SDK_ROOT=$HOME/android-sdk
+          mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
+          
+          # Descargar Command Line Tools oficiales
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdtools.zip
+          unzip -q cmdtools.zip -d $ANDROID_SDK_ROOT/cmdline-tools
+          mv $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools $ANDROID_SDK_ROOT/cmdline-tools/latest
+          
+          # Configurar variables de entorno
+          export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools
+          
+          # Aceptar licencias de Android automáticamente
+          yes | sdkmanager --licenses > /dev/null
+          
+          # Instalar plataformas y herramientas necesarias
+          sdkmanager --install "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+          
+          # Dar permisos al gradlew y compilar
           gradle wrapper --gradle-version 8.9
           chmod +x gradlew
           ./gradlew assembleDebug
-          
+
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
